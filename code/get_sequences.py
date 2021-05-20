@@ -13,6 +13,7 @@ Example usage: python get_sequences.py ../data/SplicingLibData_Indices.csv ../da
 
 import csv
 import sys
+import numpy as np
 
 VERBOSE = False 
 
@@ -75,6 +76,7 @@ f = open(data_filename, 'w')
  
 library_types = {}
 
+lengths = []
 with open(csv_filename) as csvfile:
 	csv_reader = csv.reader(csvfile, delimiter=',')
 	next(csv_reader)
@@ -103,6 +105,7 @@ with open(csv_filename) as csvfile:
 			fivess_idx = full_seq.index(fivess_seq)
 			bp_idx = full_seq.index(bp_seq)
 			threess_idx = full_seq.index(threess_seq)
+			lengths += [len(full_seq)]
 			f.write("%s,%s,%f,%s,%d,%d,%d\n" % \
 				(library_type, barcode, splicing_eff, full_seq, \
 					fivess_idx, bp_idx, threess_idx))
@@ -117,5 +120,8 @@ for key, curval in library_types.items():
 # Controls: 1781
 # Missing: natural intron sequences (1173), natural introns with mutated splice sites (1328)
 
+print(np.mean(np.array(lengths)))
+print(np.min(np.array(lengths)))
+print(np.max(np.array(lengths)))
 f.close()
 
