@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 import numpy as np
 
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Activation, Dropout, Input, Conv1D
 from tensorflow.keras.layers import LSTM, Bidirectional, BatchNormalization
@@ -20,6 +21,9 @@ from utils import get_X_Y
 ALPHA = 0.001
 EPOCHS = 10
 BATCH_SIZE = 64
+
+# Disables cuDNN until the Driver is updated
+# tf.compat.v1.disable_eager_execution()
 
 train_filename = sys.argv[1]
 train_df = pd.read_csv(train_filename)
