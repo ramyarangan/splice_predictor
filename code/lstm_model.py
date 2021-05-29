@@ -21,7 +21,7 @@ from utils import get_X_Y
 ALPHA = 0.001
 EPOCHS = 10
 BATCH_SIZE = 64
-DROPOUT_RATE = 1
+DROPOUT_RATE = 0.1
 
 # Disables cuDNN until the Driver is updated
 # tf.compat.v1.disable_eager_execution()
