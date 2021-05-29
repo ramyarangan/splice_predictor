@@ -14,6 +14,7 @@ Example usage: python get_sequences.py ../data/SplicingLibData_Indices.csv ../da
 import csv
 import sys
 import numpy as np
+import pandas as pd
 
 VERBOSE = False 
 
@@ -77,41 +78,46 @@ f = open(data_filename, 'w')
 library_types = {}
 
 lengths = []
-with open(csv_filename) as csvfile:
-	csv_reader = csv.reader(csvfile, delimiter=',')
-	next(csv_reader)
 
-	f.write("type,barcode,splicing_eff,full_seq,fivess_idx,bp_idx,threess_idx\n")
+df = pd.read_csv(csv_filename)
 
-	for row in csv_reader:
-		splicing_effs = {1: row[33], 2: row[35], 3: row[37], 4: row[39]}
-		cur_seq = row[2]
-		barcode = row[4]
-		library_type = row[0]
 
-		if library_type not in library_types.keys():
-			library_types[library_type] = 1
-		else: 
-			library_types[library_type] += 1
+f.write("type,barcode,splicing_eff,full_seq,fivess_idx,bp_idx,threess_idx\n")
 
-		splice_site_idxs = (int(row[14]), int(row[15]), int(row[16]))
-		fivess_seq, bp_seq, threess_seq = \
-			get_fivess_bp_threess_seqs(cur_seq, barcode, splice_site_idxs)
+for idx, row in df.iterrows():
+	splicing_effs = {1: row['splicing_eff_idx1'], 2: row['splicing_eff_idx2'], \
+		3: row['splicing_eff_idx3'], 4: row['splicing_eff_idx4']}
+	cur_seq = row['seq']
+	barcode = row['BC']
+	library_type = row['type']
 
-		for ii in range(1, 5):
-			idx_seq = idx_seqs[ii]
-			splicing_eff = float(splicing_effs[ii])
-			full_seq = get_full_rna_seq(cur_seq, background_seq_1, idx_seq)
-			fivess_idx = full_seq.index(fivess_seq)
-			bp_idx = full_seq.index(bp_seq)
-			threess_idx = full_seq.index(threess_seq)
-			lengths += [len(full_seq)]
-			f.write("%s,%s,%f,%s,%d,%d,%d\n" % \
-				(library_type, barcode, splicing_eff, full_seq, \
-					fivess_idx, bp_idx, threess_idx))
+	if library_type not in library_types.keys():
+		library_types[library_type] = 1
+	else: 
+		library_types[library_type] += 1
 
+	splice_site_idxs = (int(row['SS5_inds']), int(row['branch_inds']), \
+		int(row['SS3_inds']))
+	fivess_seq, bp_seq, threess_seq = \
+		get_fivess_bp_threess_seqs(cur_seq, barcode, splice_site_idxs)
+
+	for ii in range(1, 5):
+		idx_seq = idx_seqs[ii]
+		splicing_eff = float(splicing_effs[ii])
+		full_seq = get_full_rna_seq(cur_seq, background_seq_1, idx_seq)
+		fivess_idx = full_seq.index(fivess_seq)
+		bp_idx = full_seq.index(bp_seq)
+		threess_idx = full_seq.index(threess_seq)
+		lengths += [len(full_seq)]
+		f.write("%s,%s,%f,%s,%d,%d,%d\n" % \
+			(library_type, barcode, splicing_eff, full_seq, \
+				fivess_idx, bp_idx, threess_idx))
+
+total = 0
 for key, curval in library_types.items():
-	print("Library type: %s, Number of items: %d\n" % (key, curval))
+	print("Library type: %s, Number of items: %d" % (key, curval))
+	total += curval
+print("Total number of items: %d" % total)
 
 # Library types: 
 # Synthetic: 4713

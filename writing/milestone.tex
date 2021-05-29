@@ -94,6 +94,7 @@ Ramya Rangan}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Code for this project is available at \texttt{https://github.com/ramyarangan/cs230\_project}.
 \section{Introduction}
 \subsection{Description}
 The process of accurately and efficiently creating mRNA and then proteins from our genomes' DNA is critical for nearly all biological processes. Over 95\% of human genes are edited via {\bf mRNA splicing}, a process in which large sections of mRNA known as {\bf introns} are precisely recognized and removed to create the final mature mRNA that encodes the correct protein product (Figure \ref{fig:splicing}). Errors in mRNA splicing are implicated in a host of diseases from autism to cancers, with mistakes in this editing process leading to incorrect protein products and downstream disease pathways. Splicing proceeds via the recognition of specific parts of the mRNA sequence, but the patterns are complex, with mRNA sequence features influencing protein binding and RNA structures which in turn effects splicing levels. Though it is of great interest to understand the rules that govern the extent to which splicing occurs at a particular position in mRNA, we do not yet have predictive models that can determine splicing efficiency from an mRNA's sequence. Here we explore CNN and RNN approaches for predicting splicing efficiency values given an RNA sequence context.
@@ -133,7 +134,6 @@ CNN models have been used fruitfully to predict binary splicing outcomes from mR
 RNN models have been shown to capture long-range base-pairing interactions in RNA sequences [5], which have been shown to play a role in regulating mRNA splicing efficiency. These long-range interactions represent second-order effects that would not be captured by the Baseline Model. We will implement and train an RNN, and evaluate its performance on the development set.
 \section{Results}
 \section{Discussion and Conclusion}
-\section{Code availability}
 
 \begin{thebibliography}{9}
 \bibitem{pilpel} 
