@@ -9,6 +9,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Activation, Dropout, Input, Conv1D
 from tensorflow.keras.layers import LSTM, Bidirectional, BatchNormalization
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.backend import int_shape
 
 import wandb
 from wandb.keras import WandbCallback
@@ -37,7 +38,7 @@ def model(input_shape):
     X = Dropout(rate=0.8)(X)                             
 
     # Needed for running LSTM layer on GPU
-    batch_shape = (BATCH_SIZE, X._keras_shape[1], X._keras_shape[2])
+    batch_shape = (BATCH_SIZE, int_shape(X)[1], int_shape(X)[2])
     
     # Two Bidirectional LSTM layers
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
@@ -46,7 +47,7 @@ def model(input_shape):
     X = BatchNormalization()(X)                           
 
     # Needed for running LSTM layer on GPU
-    batch_shape = (BATCH_SIZE, X._keras_shape[1], X._keras_shape[2])
+    batch_shape = (BATCH_SIZE, int_shape(X)[1], int_shape(X)[2])
      
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
     	return_sequences=True))(X)
@@ -65,24 +66,23 @@ def model(input_shape):
 train_X, train_Y = get_X_Y(train_df)
 dev_X, dev_Y = get_X_Y(dev_df)
 
-# wandb.init(project='splicing', config={'learning_rate': ALPHA, 
-# 	'epochs': EPOCHS,
-# 	'batch_size': BATCH_SIZE,
-# 	'loss_function': 'mean_squared_error',
-# 	'architecture': 'bi-lstm',
-# 	'dataset': 'fullseq_all'
-# 	})
+wandb.init(project='splicing', config={'learning_rate': ALPHA, 
+	'epochs': EPOCHS,
+	'batch_size': BATCH_SIZE,
+	'loss_function': 'mean_squared_error',
+	'architecture': 'bi-lstm',
+	'dataset': 'fullseq_all'
+	})
 
 model = model(input_shape = (train_X.shape[1], train_X.shape[2]))
 model.summary()
 
-opt = Adam(lr=ALPHA, beta_1=0.9, beta_2=0.999, decay=0.01)
+opt = Adam(learning_rate=ALPHA, beta_1=0.9, beta_2=0.999, decay=0.01)
 model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
-print(train_X.shape[0] % BATCH_SIZE)
 
-#model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
-#	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
-#model.save("lstm_model.h5")
+model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
+	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
+model.save("lstm_model.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
