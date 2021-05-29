@@ -1,3 +1,4 @@
 data/splicing_data.csv
 code/wandb/
 data/splicing_data_all.csv
+code/__pycache__/
