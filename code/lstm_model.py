@@ -36,12 +36,15 @@ def model(input_shape):
     X = Activation("relu")(X)                                
     X = Dropout(rate=0.8)(X)                             
 
+    batch_shape = (BATCH_SIZE, input_shape[0], input_shape[1])
     # Two Bidirectional LSTM layers
-    X = Bidirectional(LSTM(units=64, return_sequences=True))(X)
+    X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
+    	return_sequences=True))(X)
     X = Dropout(rate=0.8)(X)                                 
     X = BatchNormalization()(X)                           
     
-    X = Bidirectional(LSTM(units=64, return_sequences=True))(X)
+    X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
+    	return_sequences=True))(X)
     X = Dropout(rate=0.8)(X)                               
     X = BatchNormalization()(X)                             
     
