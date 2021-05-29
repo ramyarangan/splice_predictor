@@ -21,6 +21,7 @@ from utils import get_X_Y
 ALPHA = 0.001
 EPOCHS = 10
 BATCH_SIZE = 64
+DROPOUT_RATE = 1
 
 # Disables cuDNN until the Driver is updated
 # tf.compat.v1.disable_eager_execution()
@@ -39,7 +40,7 @@ def model(input_shape):
     X = Conv1D(filters=64, kernel_size=15, strides=4)(X_input) 
     X = BatchNormalization()(X)                             
     X = Activation("relu")(X)                                
-    X = Dropout(rate=0.8)(X)                             
+    X = Dropout(rate=DROPOUT_RATE)(X)                             
 
     # Needed for running LSTM layer on GPU
     batch_shape = (BATCH_SIZE, int_shape(X)[1], int_shape(X)[2])
@@ -47,7 +48,7 @@ def model(input_shape):
     # Two Bidirectional LSTM layers
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
     	return_sequences=True))(X)
-    X = Dropout(rate=0.8)(X)                                 
+    X = Dropout(rate=DROPOUT_RATE)(X)                                 
     X = BatchNormalization()(X)                           
 
     # Needed for running LSTM layer on GPU
@@ -55,7 +56,7 @@ def model(input_shape):
      
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
     	return_sequences=True))(X)
-    X = Dropout(rate=0.8)(X)                               
+    X = Dropout(rate=DROPOUT_RATE)(X)                               
     X = BatchNormalization()(X)                             
     
     # Fully connected layers
@@ -73,6 +74,7 @@ dev_X, dev_Y = get_X_Y(dev_df)
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
 	'epochs': EPOCHS,
 	'batch_size': BATCH_SIZE,
+	'dropout_rate': DROPOUT_RATE,
 	'loss_function': 'mean_squared_error',
 	'architecture': 'bi-lstm',
 	'dataset': 'fullseq_all'

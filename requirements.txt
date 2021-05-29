@@ -1,2 +1,2 @@
-tensorflow-gpu >= 2.0  # installs tensorflow with GPU support, should still work even without GPU
+tensorflow-gpu==2.5.0-rc3  # installs tensorflow with GPU support, should still work even without GPU
 wandb
