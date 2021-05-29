@@ -36,13 +36,18 @@ def model(input_shape):
     X = Activation("relu")(X)                                
     X = Dropout(rate=0.8)(X)                             
 
-    batch_shape = (BATCH_SIZE, input_shape[0], input_shape[1])
+    # Needed for running LSTM layer on GPU
+    batch_shape = (BATCH_SIZE, X._keras_shape[1], X._keras_shape[2])
+    
     # Two Bidirectional LSTM layers
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
     	return_sequences=True))(X)
     X = Dropout(rate=0.8)(X)                                 
     X = BatchNormalization()(X)                           
-    
+
+    # Needed for running LSTM layer on GPU
+    batch_shape = (BATCH_SIZE, X._keras_shape[1], X._keras_shape[2])
+     
     X = Bidirectional(LSTM(units=64, batch_input_shape=batch_shape, \
     	return_sequences=True))(X)
     X = Dropout(rate=0.8)(X)                               
@@ -60,25 +65,24 @@ def model(input_shape):
 train_X, train_Y = get_X_Y(train_df)
 dev_X, dev_Y = get_X_Y(dev_df)
 
-wandb.init(project='splicing', config={'learning_rate': ALPHA, 
-	'epochs': EPOCHS,
-	'batch_size': BATCH_SIZE,
-	'loss_function': 'mean_squared_error',
-	'architecture': 'bi-lstm',
-	'dataset': 'fullseq_all'
-	})
-config = wandb.config
+# wandb.init(project='splicing', config={'learning_rate': ALPHA, 
+# 	'epochs': EPOCHS,
+# 	'batch_size': BATCH_SIZE,
+# 	'loss_function': 'mean_squared_error',
+# 	'architecture': 'bi-lstm',
+# 	'dataset': 'fullseq_all'
+# 	})
 
 model = model(input_shape = (train_X.shape[1], train_X.shape[2]))
 model.summary()
 
 opt = Adam(lr=ALPHA, beta_1=0.9, beta_2=0.999, decay=0.01)
 model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
+print(train_X.shape[0] % BATCH_SIZE)
 
-
-model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
-	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
-model.save("lstm_model.h5")
+#model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
+#	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
+#model.save("lstm_model.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
