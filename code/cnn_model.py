@@ -98,4 +98,3 @@ model.save("trained_models/cnn_model_window20.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
-

@@ -1,5 +1,5 @@
 """
-Example usage: python error_analysis.py lstm_model_twolayer_twofc.h5 ../data/train_dev_test/dev.csv
+Example usage: python error_analysis.py ../data/train_dev_test/dev.csv
 """
 import sys
 import pandas as pd
@@ -13,6 +13,7 @@ model = tf.keras.models.load_model("trained_models/" + model_file)
 model.summary()
 
 dev_filename = sys.argv[2]
+
 dev_df = pd.read_csv(dev_filename)
 dev_X, dev_Y = get_X_Y(dev_df)
 
