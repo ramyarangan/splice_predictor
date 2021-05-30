@@ -2,3 +2,4 @@ data/splicing_data.csv
 code/wandb/
 data/splicing_data_all.csv
 code/__pycache__/
+data/train_dev_test_equal/train.csv

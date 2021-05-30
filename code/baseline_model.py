@@ -14,7 +14,7 @@ the 95% of the wildtype yeast spliced sequences' position-weight matrices (PWMs)
 2. Does the length distribution of the full intron and distance between the 
 (5' splice site, branch point, 3' splice site) fall within the 95% of wildtype yeast introns?
 
-Example usage: python baseline_model.py ../data/wildtype_introns.csv ../data/train_dev_test/train.csv ../data/train_dev_test/dev.csv
+Example usage: python baseline_model.py ../data/wildtype_introns.csv ../data/train_dev_test/dev.csv ../data/train_dev_test/train.csv
 """
 
 import sys
@@ -41,12 +41,18 @@ nt_idxs = {"A": 0, "T": 1, "C": 2, "G": 3, "X": 1}
 wildtype_filename = sys.argv[1]
 wildtype_df = pd.read_csv(wildtype_filename)
 
-train_filename = sys.argv[2]
-train_df = pd.read_csv(train_filename)
-
-dev_filename = sys.argv[3]
+dev_filename = sys.argv[2]
 dev_df = pd.read_csv(dev_filename)
 
+train_filename = sys.argv[3]
+train_df_1 = pd.read_csv(train_filename)
+train_df_2 = None
+if len(sys.argv) > 4:
+    train_df_2 = pd.read_csv(sys.argv[4])
+
+train_df = train_df_1
+if train_df_2 is not None:
+    train_df = pd.concat([train_df_1, train_df_2])
 
 @attrs
 class IntronPWMs:
@@ -237,7 +243,7 @@ def get_baseline_loss(candidate_df, pwms, len_cutoffs, mean_val, verbose=False):
         pred[ii] = check_splicing(candidate, pwms, len_cutoffs)
 
     pred *= mean_val # Predict the mean splicing efficiency value for non-zero values
-    # Random: pred = np.random.random(len(pred))
+    # pred = np.random.random(len(pred)) # Random: 
     if verbose:
         print("Average prediction value: %f" % np.mean(pred))
         print("Average true value: %f" % np.mean(splicing_effs))

@@ -29,6 +29,14 @@ def get_X_Y(df):
     
     return X, Y
 
+
+def get_X_Y_window(df_list, window_size=20):
+    X_all, Y_all = get_X_Y_window(df_list[0], window_size=window_size)
+    for df in df_list[1:]:
+        X_all = np.append(X_all, X, axis=0)
+        Y_all = np.append(Y_all, Y)
+    return X_all, Y_all
+
 # Returns modified sequences that have windows
 # centered on the 5'SS, BP, and 3'SS
 def get_X_Y_window(df, window_size=20):
