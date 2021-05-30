@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Activation, Dropout, Input, Conv1D
-from tensorflow.keras.layers import LSTM, Bidirectional, BatchNormalization
+from tensorflow.keras.layers import LSTM, Bidirectional, BatchNormalization, Flatten
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.backend import int_shape
 
@@ -60,7 +60,8 @@ def model(input_shape):
     X = BatchNormalization()(X)                             
     
     # Fully connected layers
-    fc_sizes = [64, 1]
+    X = Flatten()(X)
+    fc_sizes = [16, 1]
     for fc_size in fc_sizes: 
     	X = Dense(units=fc_size, activation='relu')(X)
 
@@ -88,9 +89,8 @@ model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 
 model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
 	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
-model.save("lstm_model.h5")
+model.save("trained_models/lstm_model_twolayer_twofc.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
 
-# predictions = model.predict(x)
