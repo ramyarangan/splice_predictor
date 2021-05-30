@@ -28,3 +28,26 @@ def get_X_Y(df):
     Y = np.array(df['splicing_eff'].astype(float).tolist())
     
     return X, Y
+
+# Returns modified sequences that have windows
+# centered on the 5'SS, BP, and 3'SS
+def get_X_Y_window(df, window_size=20):
+    seqs = []
+
+    for __, row in df.iterrows():
+        fiveprime_idx = row['fivess_idx']
+        bp_idx = row['bp_idx']
+        threeprime_idx = row['threess_idx']
+        full_seq = row['full_seq']
+
+        seq = full_seq[(fiveprime_idx-window_size):(fiveprime_idx+window_size)]
+        seq += full_seq[(bp_idx-window_size):(bp_idx+window_size)]
+        seq += full_seq[(threeprime_idx-window_size):(threeprime_idx+window_size)]
+
+        seqs += [seq]
+
+    seqs = np.array(seqs)
+    X = one_hot_encoding(seqs)
+    Y = np.array(df['splicing_eff'].astype(float).tolist())
+  
+    return X, Y

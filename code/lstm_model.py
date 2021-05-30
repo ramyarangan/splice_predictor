@@ -15,7 +15,7 @@ from tensorflow.keras.backend import int_shape
 import wandb
 from wandb.keras import WandbCallback
 
-from utils import get_X_Y
+from utils import get_X_Y, get_X_Y_window
 
 # Hyperparameters
 ALPHA = 0.001
@@ -69,8 +69,8 @@ def model(input_shape):
     
     return model  
 
-train_X, train_Y = get_X_Y(train_df)
-dev_X, dev_Y = get_X_Y(dev_df)
+train_X, train_Y = get_X_Y_window(train_df, window_size=20)
+dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
 
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
 	'epochs': EPOCHS,
@@ -89,7 +89,7 @@ model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 
 model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
 	callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
-model.save("trained_models/lstm_model_twolayer_twofc.h5")
+model.save("trained_models/lstm_model_window20.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
