@@ -244,6 +244,7 @@ def get_baseline_loss(candidate_df, pwms, len_cutoffs, mean_val, verbose=False):
 
     pred *= mean_val # Predict the mean splicing efficiency value for non-zero values
     # pred = np.random.random(len(pred)) # Random: 
+    pred = np.zeros(len(pred))
     if verbose:
         print("Average prediction value: %f" % np.mean(pred))
         print("Average true value: %f" % np.mean(splicing_effs))
