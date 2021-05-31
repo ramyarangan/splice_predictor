@@ -26,16 +26,13 @@ BETA1 = float(sys.argv[4]) # 0.9
 dev_filename = sys.argv[5]
 dev_df = pd.read_csv(dev_filename)
 
-train_filename = sys.argv[6]
-train_df_1 = pd.read_csv(train_filename)
-train_df_2 = None
-if len(sys.argv) > 5:
-    train_df_2 = pd.read_csv(sys.argv[7])
+train_df_1 = pd.read_csv(sys.argv[6])
+train_df_2 = pd.read_csv(sys.argv[7])
 
 train_df = train_df_1
-if train_df_2 is not None:
-    train_df = pd.concat([train_df_1, train_df_2])
+train_df = pd.concat([train_df_1, train_df_2])
 
+notes = sys.argv[8]
 
 def residual_block(X, F, f, w):
     X_shortcut = X
@@ -64,10 +61,10 @@ def model(input_shape):
     # X = residual_block(X, 32, 11, 1)
     # X = residual_block(X, 64, 11, 1)
     # X = residual_block(X, 64, 11, 1)
-    X = Conv1D(filters=32, kernel_size=1, strides=1)(X)
-    X = Add()([X, X_shortcut])
+    # X = Conv1D(filters=32, kernel_size=1, strides=1)(X)
+    # X = Add()([X, X_shortcut])
     X = Conv1D(filters=3, kernel_size=1, strides=1)(X)
-    X = Activation('softmax')(X)
+    X = Activation('relu')(X)
     X = BatchNormalization()(X)
     X = Flatten()(X)
     X = Dense(units=1, activation='relu')(X)
@@ -85,7 +82,8 @@ wandb.init(project='splicing', config={'learning_rate': ALPHA,
     'beta1': BETA1,
     'loss_function': 'mean_squared_error',
     'architecture': 'cnn',
-    'dataset': 'fullseq_all'
+    'dataset': 'fullseq_all', 
+    'notes': notes
     })
 
 model = model(input_shape = (train_X.shape[1], train_X.shape[2]))
