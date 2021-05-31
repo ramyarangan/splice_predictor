@@ -10,6 +10,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Activation, Input, Conv1D
 from tensorflow.keras.layers import BatchNormalization, Add, Flatten
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
 
 import wandb
 from wandb.keras import WandbCallback
@@ -60,9 +61,9 @@ def model(input_shape):
     X = Conv1D(filters=32, kernel_size=1, strides=1)(X_input) 
     X_shortcut = Conv1D(filters=32, kernel_size=1, strides=1)(X)
     X = residual_block(X, 32, 11, 1)
-    X = residual_block(X, 32, 11, 1)
-    X = residual_block(X, 32, 11, 1)
-    X = residual_block(X, 32, 11, 1)
+    # X = residual_block(X, 32, 11, 1)
+    # X = residual_block(X, 64, 11, 1)
+    # X = residual_block(X, 64, 11, 1)
     X = Conv1D(filters=32, kernel_size=1, strides=1)(X)
     X = Add()([X, X_shortcut])
     X = Conv1D(filters=3, kernel_size=1, strides=1)(X)
@@ -93,10 +94,10 @@ model.summary()
 opt = Adam(learning_rate=ALPHA, beta_1=BETA1, beta_2=0.999, decay=0.01)
 model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 
-# model = tf.keras.models.load_model("trained_models/model-best.h5")
-model.summary()
+# model = tf.keras.models.load_model("")
+early_stop = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=2)
 model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
-    callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
+    callbacks=[early_stop, WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
 model.save("trained_models/cnn_model_window20.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
