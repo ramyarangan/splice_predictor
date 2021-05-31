@@ -1,5 +1,5 @@
 """
-Example usage: python cnn_model.py ../data/train_dev_test_equal/dev.csv ../data/train_dev_test_equal/train_pt1.csv ../data/train_dev_test_equal/train_pt2.csv
+Example usage: python cnn_model.py 0.001 20 128 ../data/train_dev_test_equal/dev.csv ../data/train_dev_test_equal/train_pt1.csv ../data/train_dev_test_equal/train_pt2.csv
 """
 import sys
 import pandas as pd
@@ -17,23 +17,23 @@ from wandb.keras import WandbCallback
 from utils import get_X_Y, get_X_Y_window
 
 # Hyperparameters
-ALPHA = 0.001
-EPOCHS = 10
-BATCH_SIZE = 64
-DROPOUT_RATE = 0.1
+ALPHA = float(sys.argv[1]) # 0.0001
+EPOCHS = int(sys.argv[2]) # 20
+BATCH_SIZE = int(sys.argv[3]) # 32
 
-dev_filename = sys.argv[1]
+dev_filename = sys.argv[4]
 dev_df = pd.read_csv(dev_filename)
 
-train_filename = sys.argv[2]
+train_filename = sys.argv[5]
 train_df_1 = pd.read_csv(train_filename)
 train_df_2 = None
-if len(sys.argv) > 3:
-    train_df_2 = pd.read_csv(sys.argv[3])
+if len(sys.argv) > 5:
+    train_df_2 = pd.read_csv(sys.argv[6])
 
 train_df = train_df_1
 if train_df_2 is not None:
     train_df = pd.concat([train_df_1, train_df_2])
+
 
 def residual_block(X, F, f, w):
     X_shortcut = X
@@ -80,7 +80,6 @@ dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
     'epochs': EPOCHS,
     'batch_size': BATCH_SIZE,
-    'dropout_rate': DROPOUT_RATE,
     'loss_function': 'mean_squared_error',
     'architecture': 'cnn',
     'dataset': 'fullseq_all'
@@ -92,6 +91,8 @@ model.summary()
 opt = Adam(learning_rate=ALPHA, beta_1=0.9, beta_2=0.999, decay=0.01)
 model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 
+# model = tf.keras.models.load_model("trained_models/model-best.h5")
+model.summary()
 model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
     callbacks=[WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
 model.save("trained_models/cnn_model_window20.h5")
