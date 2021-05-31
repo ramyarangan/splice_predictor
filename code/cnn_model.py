@@ -75,8 +75,8 @@ def model(input_shape):
 
 #train_X, train_Y = get_X_Y_window(train_df, window_size=20)
 #dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
-train_X, train_Y = get_X_Y_intron(train_df)
-dev_X, dev_Y = get_X_Y_intron(dev_df)
+train_X, train_Y = get_X_Y(train_df)
+dev_X, dev_Y = get_X_Y(dev_df)
 
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
     'epochs': EPOCHS,
