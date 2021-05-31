@@ -20,15 +20,16 @@ from utils import get_X_Y, get_X_Y_window
 ALPHA = float(sys.argv[1]) # 0.0001
 EPOCHS = int(sys.argv[2]) # 20
 BATCH_SIZE = int(sys.argv[3]) # 32
+BETA1 = float(sys.argv[4]) # 0.9
 
-dev_filename = sys.argv[4]
+dev_filename = sys.argv[5]
 dev_df = pd.read_csv(dev_filename)
 
-train_filename = sys.argv[5]
+train_filename = sys.argv[6]
 train_df_1 = pd.read_csv(train_filename)
 train_df_2 = None
 if len(sys.argv) > 5:
-    train_df_2 = pd.read_csv(sys.argv[6])
+    train_df_2 = pd.read_csv(sys.argv[7])
 
 train_df = train_df_1
 if train_df_2 is not None:
@@ -80,6 +81,7 @@ dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
     'epochs': EPOCHS,
     'batch_size': BATCH_SIZE,
+    'beta1': BETA1,
     'loss_function': 'mean_squared_error',
     'architecture': 'cnn',
     'dataset': 'fullseq_all'
@@ -88,7 +90,7 @@ wandb.init(project='splicing', config={'learning_rate': ALPHA,
 model = model(input_shape = (train_X.shape[1], train_X.shape[2]))
 model.summary()
 
-opt = Adam(learning_rate=ALPHA, beta_1=0.9, beta_2=0.999, decay=0.01)
+opt = Adam(learning_rate=ALPHA, beta_1=BETA1, beta_2=0.999, decay=0.01)
 model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 
 # model = tf.keras.models.load_model("trained_models/model-best.h5")
