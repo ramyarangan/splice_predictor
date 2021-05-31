@@ -84,6 +84,7 @@ df = pd.read_csv(csv_filename)
 
 f.write("type,barcode,splicing_eff,full_seq,fivess_idx,bp_idx,threess_idx\n")
 
+max_intron_len = -1
 for idx, row in df.iterrows():
 	splicing_effs = {1: row['splicing_eff_idx1'], 2: row['splicing_eff_idx2'], \
 		3: row['splicing_eff_idx3'], 4: row['splicing_eff_idx4']}
@@ -108,6 +109,8 @@ for idx, row in df.iterrows():
 		fivess_idx = full_seq.index(fivess_seq)
 		bp_idx = full_seq.index(bp_seq)
 		threess_idx = full_seq.index(threess_seq)
+		if threess_idx - fivess_idx > max_intron_len:
+			max_intron_len = threess_idx - fivess_idx
 		lengths += [len(full_seq)]
 		f.write("%s,%s,%f,%s,%d,%d,%d\n" % \
 			(library_type, barcode, splicing_eff, full_seq, \
@@ -119,6 +122,7 @@ for key, curval in library_types.items():
 	total += curval
 print("Total number of items: %d" % total)
 
+print("Max intron length: %d" % max_intron_len)
 # Library types: 
 # Synthetic: 4713
 # Alternate background: 1377

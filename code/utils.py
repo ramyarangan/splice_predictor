@@ -29,6 +29,23 @@ def get_X_Y(df):
     
     return X, Y
 
+def get_X_Y_intron(df):
+    seqs = []
+
+    for __, row in df.iterrows():
+        fiveprime_idx = row['fivess_idx']
+        full_seq = row['full_seq']
+
+        # 145 is the length of the longest intron in the library
+        seq = full_seq[(fiveprime_idx):(fiveprime_idx+145)]
+        seqs += [seq]
+
+    seqs = np.array(seqs)
+    X = one_hot_encoding(seqs)
+    Y = np.array(df['splicing_eff'].astype(float).tolist())
+  
+    return X, Y
+ 
 
 def get_X_Y_window(df_list, window_size=20):
     X_all, Y_all = get_X_Y_window(df_list[0], window_size=window_size)
