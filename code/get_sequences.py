@@ -124,11 +124,18 @@ print("Total number of items: %d" % total)
 
 print("Max intron length: %d" % max_intron_len)
 # Library types: 
-# Synthetic: 4713
-# Alternate background: 1377
-# Synthtetic hairpin, synthetic mutated: 4505
-# Controls: 1781
-# Missing: natural intron sequences (1173), natural introns with mutated splice sites (1328)
+# Library type: endogenous, Number of items: 187
+# Library type: endogenous - mutated sites, Number of items: 1306
+# Library type: endogenous ss control, Number of items: 450
+# Library type: orthologous, Number of items: 961
+# Library type: orthologous ss control, Number of items: 988
+# Library type: synthetic, Number of items: 4713
+# Library type: synthetic alternative background, Number of items: 1377
+# Library type: synthetic alternative background control, Number of items: 717
+# Library type: synthetic control, Number of items: 618
+# Library type: synthetic hairpin, Number of items: 898
+# Library type: synthetic hairpin - control, Number of items: 446
+# Library type: synthetic mutated, Number of items: 3607
 
 print(np.mean(np.array(lengths)))
 print(np.min(np.array(lengths)))

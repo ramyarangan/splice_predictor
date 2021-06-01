@@ -1,1 +1,3 @@
 wandb
+keras-vis
+seaborn
