@@ -46,7 +46,7 @@ def residual_block(X, F, f, w):
     
     X = Conv1D(filters=F, kernel_size=1, strides=1, padding='valid')(X)
     X = BatchNormalization()(X)
-    X = Add()([X, X_shortcut])
+    # X = Add()([X, X_shortcut])
     X = Activation('relu')(X)
 
     return X
@@ -62,7 +62,7 @@ def model(input_shape):
     # X = residual_block(X, 32, 11, 1)
     # X = residual_block(X, 32, 11, 1)
     X = Conv1D(filters=32, kernel_size=1, strides=1)(X)
-    X = Add()([X, X_shortcut])
+    # X = Add()([X, X_shortcut])
     X = Conv1D(filters=3, kernel_size=1, strides=1)(X)
     X = Activation('softmax')(X)
     X = BatchNormalization()(X)
@@ -73,10 +73,10 @@ def model(input_shape):
     
     return model  
 
-#train_X, train_Y = get_X_Y_window(train_df, window_size=20)
-#dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
-train_X, train_Y = get_X_Y(train_df)
-dev_X, dev_Y = get_X_Y(dev_df)
+train_X, train_Y = get_X_Y_window(train_df, window_size=20)
+dev_X, dev_Y = get_X_Y_window(dev_df, window_size=20)
+# train_X, train_Y = get_X_Y(train_df)
+# dev_X, dev_Y = get_X_Y(dev_df)
 
 wandb.init(project='splicing', config={'learning_rate': ALPHA, 
     'epochs': EPOCHS,
@@ -98,7 +98,7 @@ model.compile(loss='mean_squared_error', optimizer=opt, metrics=["accuracy"])
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0.001, patience=2)
 model.fit(train_X, train_Y, validation_data=(dev_X, dev_Y), 
     callbacks=[early_stop, WandbCallback()], batch_size=BATCH_SIZE, epochs=EPOCHS)
-model.save("trained_models/cnn_model_intron.h5")
+model.save("trained_models/cnn_model_window_noadd.h5")
 
 # loss, acc = model.evaluate(dev_X, dev_Y)
 # print("Dev set accuracy = ", acc)
