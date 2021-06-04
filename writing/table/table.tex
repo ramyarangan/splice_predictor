@@ -1,0 +1,114 @@
+\documentclass[10.5pt]{article}
+\usepackage{mathpazo}
+\usepackage{hyperref,url}
+\usepackage[a4paper,margin=3cm]{geometry}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{cleveref}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage[font={small}]{caption}
+\usepackage{listings}
+
+
+\usepackage[backend=bibtex, sorting=none]{biblatex}
+\bibliography{references}
+\AtBeginBibliography{\footnotesize}
+
+\newcommand{\Slang}{\texttt{S} }
+\newcommand{\R}{\texttt{R} }
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\mbox{\normalfont\textsf{#1}}}}
+\newcommand{\E}{\mathrm{E}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\Cov}{\mathrm{Cov}}
+
+
+\usepackage{xcolor}
+\definecolor{Red}{rgb}{0.7,0,0}
+\definecolor{Blue}{rgb}{0,0,0.8}
+
+\usepackage{hyperref}
+\hypersetup{%
+  pdfusetitle,
+  bookmarks = {true},
+  bookmarksnumbered = {true},
+  bookmarksopen = {true},
+  bookmarksopenlevel = 2,
+  unicode = {true},
+  breaklinks = {false},
+  hyperindex = {true},
+  colorlinks = {true},
+  linktocpage = {true},
+  plainpages = {false},
+  linkcolor = {Blue},
+  citecolor = {Blue},
+  urlcolor = {Red},
+  pdfstartview = {Fit},
+  pdfpagemode = {UseOutlines},
+  pdfview = {XYZ null null null}
+}
+
+%% Listings
+\lstset{ 
+  language=R,                     % the language of the code
+  basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting; also try caption instead of title
+  keywordstyle=\color{Blue},      % keyword style
+  commentstyle=\color{orange},    % comment style
+  stringstyle=\color{Red},        % string literal style
+  % escapeinside={\%*}{*)},       % if you want to add a comment within your code
+  % escapeinside={\%}{)},
+  morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+
+
+\newcommand{\angstrom}{\mbox{\normalfont\AA}}
+
+
+\begin{document}
+
+\begin{center}
+ \begin{tabular}{||c | c | c | c | c||} 
+ \hline
+ Model & Architecture & Sequence context & Number of parameters & Validation loss \\ [0.5ex] 
+ \hline\hline
+ RNN & 2-layer LSTM & Full transcript & 991329 & 0.251 \\ 
+ \hline
+ RNN & 2-layer LSTM & 120 nt window & 991329 & 0.251 \\ 
+ \hline
+ CNN & 4 Residual Blocks & 120 nt window & 57912 & 0.133 \\ 
+ \hline
+  {\bf CNN} & {\bf 1 Residual Block + CONV} & {\bf 120 nt window} & {\bf 16536} & {\bf0.104 } \\ 
+ \hline
+   CNN &1 Residual Block & 120 nt window & 14424 & 0.171 \\ 
+ \hline
+   CNN & 5 CONV & 120 nt window & 15480 & 0.171 \\
+ \hline
+   CNN &1 Residual Block + CONV & Full intron & 16536 & 0.134 \\
+\hline
+   CNN &1 Residual Block + CONV & Full transcript & 16536 & 0.251 \\
+ \hline
+ \hline
+\end{tabular}
+\end{center}
+
+
+\end{document}

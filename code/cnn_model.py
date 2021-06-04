@@ -46,7 +46,7 @@ def residual_block(X, F, f, w):
     
     X = Conv1D(filters=F, kernel_size=1, strides=1, padding='valid')(X)
     X = BatchNormalization()(X)
-    # X = Add()([X, X_shortcut])
+    X = Add()([X, X_shortcut])
     X = Activation('relu')(X)
 
     return X
@@ -62,7 +62,7 @@ def model(input_shape):
     # X = residual_block(X, 32, 11, 1)
     # X = residual_block(X, 32, 11, 1)
     X = Conv1D(filters=32, kernel_size=1, strides=1)(X)
-    # X = Add()([X, X_shortcut])
+    X = Add()([X, X_shortcut])
     X = Conv1D(filters=3, kernel_size=1, strides=1)(X)
     X = Activation('softmax')(X)
     X = BatchNormalization()(X)

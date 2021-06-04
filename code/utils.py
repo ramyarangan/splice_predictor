@@ -1,3 +1,4 @@
+import tensorflow as tf 
 from tensorflow import keras 
 import numpy as np
 
@@ -5,6 +6,13 @@ import numpy as np
 def compute_loss(y_pred, y_true):
     loss = keras.losses.mean_squared_error(y_pred, y_true)
     return loss.numpy()
+
+# R2 error 
+def compute_R2(y_pred, y_true):
+    unexplained_error = tf.reduce_sum(tf.square(tf.subtract(y_true, y_pred)))
+    total_error = tf.reduce_sum(tf.square(tf.subtract(y_true, tf.reduce_mean(y_true))))
+    R_squared = tf.subtract(1, tf.math.divide(unexplained_error, total_error))
+    return R_squared
 
 # One-hot encoding indices
 nt_dict = {'A': 0, 'C': 1, 'T': 2, 'G': 3}
@@ -20,6 +28,13 @@ def one_hot_encoding(X):
         one_hot_X[ii, :, :] = np.eye(num_nts)[idxs]
 
     return one_hot_X
+
+def get_entropy(one_hot_X, epsilon=0.00001):
+    seq_sums = np.sum(one_hot_X, axis=0)
+    seq_freqs = seq_sums/np.sum(seq_sums, axis=1, keepdims=True)
+    seq_freqs += epsilon
+    entropy = -np.sum(seq_freqs * np.log(seq_freqs), axis=1)
+    return entropy
 
 # Assemble one-hot-encoded inputs from input dataframe
 def get_X_Y(df):
@@ -68,7 +83,6 @@ def get_X_Y_window(df, window_size=20):
         seq = full_seq[(fiveprime_idx-window_size):(fiveprime_idx+window_size)]
         seq += full_seq[(bp_idx-window_size):(bp_idx+window_size)]
         seq += full_seq[(threeprime_idx-window_size):(threeprime_idx+window_size)]
-
         seqs += [seq]
 
     seqs = np.array(seqs)

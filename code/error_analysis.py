@@ -32,7 +32,14 @@ def plot_splicing_eff_dist(predictions, dev_Y):
 def plot_avg_mse_library(dev_df, predictions, dev_Y):
 	library_types = dev_df.type.unique()
 	losses = []
-	for library in library_types:
+	min_val = min(min(dev_Y), min(predictions))
+	max_val = max(max(dev_Y), max(predictions))
+	bins = np.linspace(min_val, max_val, 30)
+	library_types_ordered = ['synthetic', 'synthetic mutated', 'synthetic hairpin', \
+		'synthetic alternative background', 'endogenous', 'endogenous - mutated sites', \
+		'orthologous', 'synthetic control', 'synthetic hairpin - control', \
+		'synthetic alternative background control', 'endogenous ss control', 'orthologous ss control']
+	for library in library_types_ordered:
 		all_idxs = np.arange(dev_df.shape[0])
 		library_idxs = all_idxs[dev_df['type'] == library]
 		library_loss = compute_loss(dev_Y[library_idxs], predictions[library_idxs])
@@ -43,9 +50,9 @@ def plot_avg_mse_library(dev_df, predictions, dev_Y):
 		plt.ylabel("Number of examples")
 		plt.title(library)
 		plt.show()
-	print(library_types)
+	print(library_types_ordered)
 	print(losses)
-	plt.bar(library_types, losses, color='forestgreen', width=0.4)
+	plt.bar(library_types_ordered, losses, color='forestgreen', width=0.4)
 	plt.xlabel("Library type")
 	plt.xticks(rotation = 45)
 	plt.ylabel("Mean squared error loss")
@@ -78,6 +85,8 @@ def plot_saliency_for_windows(dev_X, predictions, num_plot=100, num_avg=1000):
 	baseline_saliency[98:100] = 1
 	baseline_saliency = baseline_saliency.reshape(1, (len(baseline_saliency)))
 
+	entropy_vals = get_entropy(dev_X)
+
 	# Can make plots in ranges of predicted splicing efficiency
 	eff_ranges = [(0, 1)]#, (0.1, 0.5), (0.5, 0.8), (0.8, 1.0)]
 	for (range_start, range_end) in eff_ranges:
@@ -91,14 +100,20 @@ def plot_saliency_for_windows(dev_X, predictions, num_plot=100, num_avg=1000):
 		data = saliency_map[idx_sample,:]
 		df = pd.DataFrame(data).melt()
 		
-		fig, (ax1, ax2, ax3, ax4) = plt.subplots(3, 1, figsize=(12,8), gridspec_kw={'height_ratios':[1,5,5,10]})
+		fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(12,8), \
+			gridspec_kw={'height_ratios':[1,5,5,10]})
 		
 		# Canonical splicing sequences
 		sns.heatmap(baseline_saliency, cmap='Blues', ax=ax1, cbar=False)
 		ax1.set_title("Canonical splicing sequences")
 		ax1.axes.xaxis.set_visible(False)
+		ax1.axes.yaxis.set_visible(False)
 		
-		# Per-position sequence variation
+		# Per-position sequence entropy
+		sns.lineplot(data=entropy_vals, ax=ax2)
+		ax2.axes.xaxis.set_visible(False)
+		ax2.set_ylabel("Sequence Entropy")
+		ax2.set_title("Per-position sequence entropy")
 
 		# Average saliency
 		sns.lineplot(data=df, x="variable", y="value", ax=ax3)
@@ -114,9 +129,29 @@ def plot_saliency_for_windows(dev_X, predictions, num_plot=100, num_avg=1000):
 		
 		plt.show()
 
+def plot_loss():
+	df = pd.read_csv('analysis/wandb_best.csv')
+	epochs = df['Step'].astype(int).tolist()
+	training_loss = df['Training loss'].astype(float).tolist()
+	val_loss = df['Validation loss'].astype(float).tolist()
+	random_mse = [0.266] * len(epochs)
+	all_zero_mse = [0.25] * len(epochs)
+	baseline_mse = [0.188] * len(epochs)
+
+	plt.plot(epochs, random_mse, color='#0072B2', label='Random loss', linestyle='dashed')
+	plt.plot(epochs, all_zero_mse, color='#D55E00', label='All-zero loss', linestyle='dashed')
+	plt.plot(epochs, baseline_mse, color='#CC79A7', label='Baseline loss', linestyle='dashed')
+	plt.plot(epochs, training_loss, color='#009E73', label='Training loss')
+	plt.plot(epochs, val_loss, color='#56B4E9', label='Validation loss')
+	plt.title("Loss for best CNN model compared to baselines")
+	plt.ylim((0, 0.3))
+	plt.xticks(epochs)
+	plt.xlabel("Epochs")
+	plt.ylabel("Mean squared error loss")
+	plt.legend()
+	plt.show()
+
 # Low-medium-high position weight matrix images
-
-
 
 model = tf.keras.models.load_model("trained_models/" + model_file)
 model.summary()
@@ -130,4 +165,5 @@ print("Overall mean squared error loss: %f" % loss)
 
 # plot_splicing_eff_dist(predictions, dev_Y)
 # plot_avg_mse_library(dev_df, predictions, dev_Y)
-plot_saliency_for_windows(dev_X, predictions)
+# plot_saliency_for_windows(dev_X, predictions)
+# plot_loss()

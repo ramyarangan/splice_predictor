@@ -52,6 +52,8 @@ for library in library_types:
 	train_end = int(TRAIN_FRAC*len(barcodes))
 	dev_end = train_end + int(DEV_FRAC*len(barcodes))
 
+	# Split data by barcodes to ensure that identical sequences aren't
+	# included in train, dev, and test sets.
 	train_barcodes = barcodes[0:train_end]
 	dev_barcodes = barcodes[train_end:dev_end]
 	test_barcodes = barcodes[dev_end:]

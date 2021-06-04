@@ -14,7 +14,8 @@ the 95% of the wildtype yeast spliced sequences' position-weight matrices (PWMs)
 2. Does the length distribution of the full intron and distance between the 
 (5' splice site, branch point, 3' splice site) fall within the 95% of wildtype yeast introns?
 
-Example usage: python baseline_model.py ../data/wildtype_introns.csv ../data/train_dev_test/dev.csv ../data/train_dev_test/train.csv
+Example usage: 
+python baseline_model.py ../data/wildtype_introns.csv random ../data/train_dev_test_equal/dev.csv ../data/train_dev_test_equal/test.csv ../data/train_dev_test_equal/train_pt1.csv ../data/train_dev_test_equal/train_pt2.csv
 """
 
 import sys
@@ -24,7 +25,7 @@ import numpy as np
 import pandas as pd
 from attr import attrs,attrib
 
-from utils import compute_loss
+from utils import *
 
 FIVESS_LEN = 6 # Length of 5'SS motif from the wildtype yeast intron dataset
 BP_LEN = 8 # Length of BP motif from the wildtype yeast intron dataset
@@ -41,14 +42,19 @@ nt_idxs = {"A": 0, "T": 1, "C": 2, "G": 3, "X": 1}
 wildtype_filename = sys.argv[1]
 wildtype_df = pd.read_csv(wildtype_filename)
 
-dev_filename = sys.argv[2]
+mode = sys.argv[2] # random, zero, or baseline
+
+dev_filename = sys.argv[3]
 dev_df = pd.read_csv(dev_filename)
 
-train_filename = sys.argv[3]
+test_filename = sys.argv[4]
+test_df = pd.read_csv(test_filename)
+
+train_filename = sys.argv[5]
 train_df_1 = pd.read_csv(train_filename)
 train_df_2 = None
 if len(sys.argv) > 4:
-    train_df_2 = pd.read_csv(sys.argv[4])
+    train_df_2 = pd.read_csv(sys.argv[6])
 
 train_df = train_df_1
 if train_df_2 is not None:
@@ -234,21 +240,25 @@ def get_nonzero_mean_splicing_eff(df):
     splicing_effs = splicing_effs[splicing_effs > EPSILON]
     return np.mean(splicing_effs)
 
-def get_baseline_loss(candidate_df, pwms, len_cutoffs, mean_val, verbose=False):
+def get_baseline_loss(candidate_df, pwms, len_cutoffs, mean_val, mode, verbose=False):
     candidates, splicing_effs = get_candidates(candidate_df)
     splicing_effs = np.array(splicing_effs)
 
     pred = np.zeros(len(candidates))
-    for ii, candidate in enumerate(candidates):
-        pred[ii] = check_splicing(candidate, pwms, len_cutoffs)
+    if mode == "baseline":
+        for ii, candidate in enumerate(candidates):
+            pred[ii] = check_splicing(candidate, pwms, len_cutoffs)
+        pred *= mean_val # Predict the mean splicing efficiency value for non-zero values
+    elif mode == "random": 
+        pred = np.random.random(len(pred))
+    elif mode != "zero": 
+        print("Cannot produce baseline predictions with mode: %s" % mode)
 
-    pred *= mean_val # Predict the mean splicing efficiency value for non-zero values
-    # pred = np.random.random(len(pred)) # Random: 
-    pred = np.zeros(len(pred))
     if verbose:
         print("Average prediction value: %f" % np.mean(pred))
         print("Average true value: %f" % np.mean(splicing_effs))
 
+    print(compute_R2(pred, splicing_effs))
     return compute_loss(pred, splicing_effs)
 
 pwms = get_pwms(wildtype_df, perc=(1-PERCENTILE))
@@ -256,5 +266,8 @@ len_cutoffs = get_length_cutoffs(wildtype_df, perc=(1-PERCENTILE))
 print(len_cutoffs)
 
 train_nonzero_mean = get_nonzero_mean_splicing_eff(train_df)
-dev_loss = get_baseline_loss(dev_df, pwms, len_cutoffs, train_nonzero_mean)
+dev_loss = get_baseline_loss(dev_df, pwms, len_cutoffs, train_nonzero_mean, mode)
 print("Loss on dev set: %f" % dev_loss)
+
+test_loss = get_baseline_loss(test_df, pwms, len_cutoffs, train_nonzero_mean, mode)
+print("Loss on test set: %f" % test_loss)

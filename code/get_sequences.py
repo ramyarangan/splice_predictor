@@ -112,9 +112,10 @@ for idx, row in df.iterrows():
 		if threess_idx - fivess_idx > max_intron_len:
 			max_intron_len = threess_idx - fivess_idx
 		lengths += [len(full_seq)]
-		f.write("%s,%s,%f,%s,%d,%d,%d\n" % \
+		intron_seq = full_seq[fivess_idx:(threess_idx+3)]
+		f.write("%s,%s,%f,%s,%d,%d,%d,%s\n" % \
 			(library_type, barcode, splicing_eff, full_seq, \
-				fivess_idx, bp_idx, threess_idx))
+				fivess_idx, bp_idx, threess_idx, intron_seq))
 
 total = 0
 for key, curval in library_types.items():
