@@ -1,4 +1,6 @@
 """
+Bidirectional LSTM architecture with dropout layers for predicting splicing efficiency from sequence
+
 Example usage: python lstm_model.py ../data/train_dev_test/train.csv ../data/train_dev_test/dev.csv
 """
 import sys

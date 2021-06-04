@@ -1,4 +1,6 @@
 """
+CNN architecture with residual blocks for predicting splicing efficiency from sequence
+
 Example usage: python cnn_model.py 0.001 20 128 ../data/train_dev_test_equal/dev.csv ../data/train_dev_test_equal/train_pt1.csv ../data/train_dev_test_equal/train_pt2.csv
 """
 import sys
@@ -34,6 +36,7 @@ train_df = pd.concat([train_df_1, train_df_2])
 
 notes = sys.argv[8]
 
+# Residual block
 def residual_block(X, F, f, w):
     X_shortcut = X
     X = Conv1D(filters=F, kernel_size=1, strides=1, padding='valid')(X)
@@ -51,6 +54,7 @@ def residual_block(X, F, f, w):
 
     return X
 
+# CNN Model
 def model(input_shape):    
     X_input = Input(shape = input_shape)
 

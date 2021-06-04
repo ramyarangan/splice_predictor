@@ -1,4 +1,5 @@
 """
+Performs saliency analysis with SmoothGrad and analyzes errors on validation data set
 Example usage: python error_analysis.py cnn_model_1resblock_fancyleaf52.h5 ../data/train_dev_test_equal/dev.csv
 """
 import sys
@@ -129,6 +130,7 @@ def plot_saliency_for_windows(dev_X, predictions, num_plot=100, num_avg=1000):
 		
 		plt.show()
 
+# Plots loss function over epochs of training
 def plot_loss():
 	df = pd.read_csv('analysis/wandb_best.csv')
 	epochs = df['Step'].astype(int).tolist()
@@ -163,7 +165,7 @@ predictions = np.array(model.predict(dev_X)).flatten()
 loss = compute_loss(dev_Y, predictions)
 print("Overall mean squared error loss: %f" % loss)
 
-# plot_splicing_eff_dist(predictions, dev_Y)
-# plot_avg_mse_library(dev_df, predictions, dev_Y)
-# plot_saliency_for_windows(dev_X, predictions)
-# plot_loss()
+plot_splicing_eff_dist(predictions, dev_Y)
+plot_avg_mse_library(dev_df, predictions, dev_Y)
+plot_saliency_for_windows(dev_X, predictions)
+plot_loss()

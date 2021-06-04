@@ -22,7 +22,7 @@ df = pd.read_csv(all_data_filename)
 # Remove na values
 df = df[df['splicing_eff'].notna()]
 
-# Equal data from 0 to 0.1 and from 0.1 to 1
+# Equalize data from 0 to 0.1 and from 0.1 to 1
 all_idxs = np.arange(df.shape[0])
 not_splicing = all_idxs[df['splicing_eff'].astype(float) < 0.1]
 splicing = all_idxs[df['splicing_eff'].astype(float) >= 0.1]

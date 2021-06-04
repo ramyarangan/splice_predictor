@@ -17,31 +17,31 @@
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \citation{pilpel}
-\citation{pilpel}
-\citation{pilpel}
 \citation{seelig}
 \citation{pilpel}
 \citation{seelig}
 \citation{spanr}
 \citation{spliceai}
 \citation{rnn}
+\citation{pilpel}
+\citation{pilpel}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.1}Description}{1}{subsection.1.1}}
-\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:splicing}{{1a}{1}{\relax }{figure.caption.2}{}}
-\newlabel{fig:splicing@cref}{{[subfigure][1][1]1a}{1}}
-\newlabel{sub@fig:splicing}{{a}{1}{\relax }{figure.caption.2}{}}
-\newlabel{sub@fig:splicing@cref}{{[subfigure][1][1]1a}{1}}
-\newlabel{fig:dataset}{{1b}{1}{\relax }{figure.caption.2}{}}
-\newlabel{fig:dataset@cref}{{[subfigure][2][1]1b}{1}}
-\newlabel{sub@fig:dataset}{{b}{1}{\relax }{figure.caption.2}{}}
-\newlabel{sub@fig:dataset@cref}{{[subfigure][2][1]1b}{1}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces a) mRNA splicing overview. b) Schematic depicting the library of splicing efficiency measurements. Data and figure from Schirman, et al. bioRxiv 2021 \cite  {pilpel}.\relax }}{1}{figure.caption.2}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.2}Related work}{1}{subsection.1.2}}
 \citation{pilpel}
 \citation{splicingreview}
 \citation{splicingreview}
 \@writefile{toc}{\contentsline {subsection}{\numberline {1.3}Contribution}{2}{subsection.1.3}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:splicing}{{1a}{2}{\relax }{figure.caption.2}{}}
+\newlabel{fig:splicing@cref}{{[subfigure][1][1]1a}{2}}
+\newlabel{sub@fig:splicing}{{a}{2}{\relax }{figure.caption.2}{}}
+\newlabel{sub@fig:splicing@cref}{{[subfigure][1][1]1a}{2}}
+\newlabel{fig:dataset}{{1b}{2}{\relax }{figure.caption.2}{}}
+\newlabel{fig:dataset@cref}{{[subfigure][2][1]1b}{2}}
+\newlabel{sub@fig:dataset}{{b}{2}{\relax }{figure.caption.2}{}}
+\newlabel{sub@fig:dataset@cref}{{[subfigure][2][1]1b}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces a) mRNA splicing overview. b) Schematic depicting the library of splicing efficiency measurements. Data and figure from Schirman, et al. bioRxiv 2021 \cite  {pilpel}.\relax }}{2}{figure.caption.2}}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Dataset and Features}{2}{section.2}}
 \@writefile{toc}{\contentsline {section}{\numberline {3} Methods }{2}{section.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Baseline Model}{2}{subsection.3.1}}
@@ -52,24 +52,13 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}CNN Model}{3}{subsection.3.3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Training strategy and evaluation metrics}{3}{subsection.3.4}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Implementation}{3}{subsection.3.5}}
-\newlabel{fig:architecture}{{2a}{4}{\relax }{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments and Results}{3}{section.4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Hyper-parameter exploration}{3}{subsection.4.1}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Performance of CNN and RNN architectures on predicting splicing efficiency. Training and validation mean-squared errors (MSE) are reported. The Pearson r is reported for the dev set for each architecture, and is reported as nan in cases where the model predicts only 0 values. The best model is bolded.\relax }}{4}{table.caption.3}}
+\newlabel{tab:perf}{{1}{4}{Performance of CNN and RNN architectures on predicting splicing efficiency. Training and validation mean-squared errors (MSE) are reported. The Pearson r is reported for the dev set for each architecture, and is reported as nan in cases where the model predicts only 0 values. The best model is bolded.\relax }{table.caption.3}{}}
+\newlabel{tab:perf@cref}{{[table][1][]1}{4}}
+\newlabel{fig:architecture}{{2a}{4}{\relax }{figure.caption.4}{}}
 \newlabel{fig:architecture@cref}{{[subfigure][1][2]2a}{4}}
-\newlabel{sub@fig:architecture}{{a}{4}{\relax }{figure.caption.3}{}}
+\newlabel{sub@fig:architecture}{{a}{4}{\relax }{figure.caption.4}{}}
 \newlabel{sub@fig:architecture@cref}{{[subfigure][1][2]2a}{4}}
-\newlabel{fig:loss}{{2b}{4}{\relax }{figure.caption.3}{}}
-\newlabel{fig:loss@cref}{{[subfigure][2][2]2b}{4}}
-\newlabel{sub@fig:loss}{{b}{4}{\relax }{figure.caption.3}{}}
-\newlabel{sub@fig:loss@cref}{{[subfigure][2][2]2b}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces a) CNN architecture for best network. b) Mean-squared error loss over epochs of training for best network.\relax }}{4}{figure.caption.3}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments and Results}{4}{section.4}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Hyper-parameter exploration}{4}{subsection.4.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Model performance}{4}{subsection.4.2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Error analysis and interpretation}{4}{subsection.4.3}}
-\bibcite{pilpel}{1}
-\bibcite{seelig}{2}
-\bibcite{spanr}{3}
-\bibcite{spliceai}{4}
-\bibcite{rnn}{5}
-\bibcite{splicingreview}{6}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion/Future Work }{5}{section.5}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Contributions}{5}{section.6}}
+\newlabel{fig:loss}{{2b}{4

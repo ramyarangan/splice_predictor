@@ -1,18 +1,16 @@
 import tensorflow as tf 
 from tensorflow import keras 
 import numpy as np
+from scipy import stats
 
 # Regression loss 
 def compute_loss(y_pred, y_true):
     loss = keras.losses.mean_squared_error(y_pred, y_true)
     return loss.numpy()
 
-# R2 error 
-def compute_R2(y_pred, y_true):
-    unexplained_error = tf.reduce_sum(tf.square(tf.subtract(y_true, y_pred)))
-    total_error = tf.reduce_sum(tf.square(tf.subtract(y_true, tf.reduce_mean(y_true))))
-    R_squared = tf.subtract(1, tf.math.divide(unexplained_error, total_error))
-    return R_squared
+# Pearson correlation
+def compute_pearson(y_pred, y_true):
+    return stats.pearsonr(y_pred, y_true)
 
 # One-hot encoding indices
 nt_dict = {'A': 0, 'C': 1, 'T': 2, 'G': 3}
@@ -29,6 +27,7 @@ def one_hot_encoding(X):
 
     return one_hot_X
 
+# Sequence entropy per-position
 def get_entropy(one_hot_X, epsilon=0.00001):
     seq_sums = np.sum(one_hot_X, axis=0)
     seq_freqs = seq_sums/np.sum(seq_sums, axis=1, keepdims=True)
@@ -44,6 +43,8 @@ def get_X_Y(df):
     
     return X, Y
 
+# Get sequence window of fixed length (max intron length in library) starting
+# at the 5'SS
 def get_X_Y_intron(df):
     seqs = []
 

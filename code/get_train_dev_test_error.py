@@ -1,4 +1,5 @@
 """
+Given a Keras model file, obtain mean squared error loss and Pearson correlation on the training, dev, and test set.
 Example usage: python error_analysis.py cnn_model_1resblock_fancyleaf52.h5 ../data/train_dev_test_equal/
 """
 import sys
@@ -26,11 +27,11 @@ def get_training_dev_test_loss(model_file, \
 		X, Y = get_X_Y(dev_df)
 	predictions = np.array(model.predict(X)).flatten()
 	loss = compute_loss(Y, predictions)
-	r2 = compute_R2(Y, predictions)
+	r = compute_pearson(Y, predictions)
 	print("Dev set MSE loss: %f" % loss)
-	print("Dev set R2: %f" % r2)
-	plt.scatter(Y, predictions)
-	plt.show()
+	print("Dev set r: %f" % r[0])
+	#plt.scatter(Y, predictions)
+	#plt.show()
 
 	train_df_1 = pd.read_csv(train_dev_test_dir + 'train_pt1.csv')
 	train_df_2 = pd.read_csv(train_dev_test_dir + 'train_pt2.csv')
@@ -44,9 +45,9 @@ def get_training_dev_test_loss(model_file, \
 		X, Y = get_X_Y(train_df)
 	predictions = np.array(model.predict(X)).flatten()
 	loss = compute_loss(Y, predictions)
-	r2 = compute_R2(Y, predictions)
+	r = compute_pearson(Y, predictions)
 	print("Training set MSE loss: %f" % loss)
-	print("Training set R2: %f" % r2)
+	print("Training set r: %f" % r[0])
 
 	test_df = pd.read_csv(train_dev_test_dir + 'test.csv')
 	X, Y = get_X_Y_window(test_df, window_size=20)
@@ -56,8 +57,8 @@ def get_training_dev_test_loss(model_file, \
 		X, Y = get_X_Y(test_df)
 	predictions = np.array(model.predict(X)).flatten()
 	loss = compute_loss(Y, predictions)
-	r2 = compute_R2(Y, predictions)
+	r = compute_pearson(Y, predictions)
 	print("Test set MSE loss: %f" % loss)
-	print("Test set R2: %f" % r2)
+	print("Test set r: %f" % r[0])
 
-get_training_dev_test_loss(model_file, train_dev_test_dir=train_dev_test_dir)
+get_training_dev_test_loss(model_file, train_dev_test_dir=train_dev_test_dir, do_full=True)

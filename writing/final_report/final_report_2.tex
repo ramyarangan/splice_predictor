@@ -32,7 +32,6 @@
 
 \author{
   Ramya Rangan\\
-  Stanford University\\
   \texttt{ramyar@stanford.edu} \\
   %% examples of more authors
   %% \And
@@ -67,7 +66,7 @@
 \maketitle
 
 \begin{abstract}
-Compared to a bi-directional LSTM and deeper CNN approach, we find that a simple CNN architecture with 1 residual block achieves best splicing efficiency predictions, with mean squared error (0.102) better than the baseline model (0.202).
+RNA splicing is a ubiquitous gene-editing process in which sequence features are recognized by cellular machinery to make precise edits necessary for generating the correct proteins from our genes. Though disease-causing mutations can often function through modulating splicing, it remains challenging to predict splicing outcomes given a sequence variant. Here we explore deep neural network approaches for predicting splicing levels from sequence for constructs measured in yeast. Compared to a bi-directional LSTM and deeper CNN models, we find that a simple CNN architecture with 1 residual block achieves best splicing efficiency predictions, with mean squared error (0.102) better than the baseline model (0.202).
 \end{abstract}
 
 \section{Introduction}	
@@ -81,22 +80,20 @@ Here, we explore the ability of deep learning to predict the extent to which spl
 \centering
 \begin{subfigure}{.4 \textwidth}
 \centering
-\caption{} \includegraphics[width=6cm]{../figures/splicing_graphic.png} 
+\includegraphics[width=6cm]{../figures/splicing_graphic.png} \caption{} 
 \label{fig:splicing}
 \end{subfigure}
 \begin{subfigure}{.5 \textwidth}
 \centering
-\caption{}  \includegraphics[width=6cm]{../figures/dataset_overview_pilpel.png} 
+\includegraphics[width=6cm]{../figures/dataset_overview_pilpel.png} \caption{}  
 \label{fig:dataset}
 \end{subfigure}
 \caption{a) mRNA splicing overview. b) Schematic depicting the library of splicing efficiency measurements. Data and figure from Schirman, et al. bioRxiv 2021 \cite{pilpel}.}
 \end{figure}
 \section{Dataset and Features}
-We use the dataset collected by Shirman, et al. \cite{pilpel} of splicing efficiency values for a library of 16268 designed sequence variants in yeast (Figure \ref{fig:dataset}). Each datapoint consists of a sequence of length 1615 nucleotides (A, C, T, or G) along with a corresponding splicing efficiency value (real values from 0 to 1), measured through RNA sequencing. The dataset consists of seven library types with different synthetic sequence design strategies to probe different backgrounds (12376 sequences) and five library types based on naturally occurring intron variants in {\it S. cerevisiae} and other related yeast species (3892 sequences).
+We use the dataset collected by Shirman, et al. \cite{pilpel} of splicing efficiency values for a library of 16268 designed sequence variants in yeast (Figure \ref{fig:dataset}). Each datapoint consists of a sequence of length 1615 nucleotides (A, C, T, or G) along with a corresponding splicing efficiency value (real values from 0 to 1), measured through RNA sequencing. The dataset consists of seven library types with different synthetic sequence design strategies to probe different backgrounds (12376 sequences) and five library types based on naturally occurring intron variants in {\it S. cerevisiae} and other related yeast species (3892 sequences). The sequences were one-hot encoded with a 4-letter vocabulary (A, C, T, or G).
 \newline \\
-To split the dataset into training, dev, and testing data, we used 90\% of each library type in the training set, and 5\% of each library type in the dev and test sets. By sampling these splits within library types, we ensured that the dev and test set have the same distribution. The original dataset contained the majority (80.3\%) of splicing efficiency values below 0.1; to correct this imbalance, we equalized the data between the ranges $[0, 0.1]$ and $[0.1, 1]$ by resampling. We made sure that near-identical sequences were not shared between the training, dev, and test sets. We explored approaches that made splicing efficiency predictions using: 1. the full 1615 nucleotide mRNA sequence, 2. the intron alone (maximum length 145 nucleotides), or 3. 20 nucleotide windows around three key splicing sequences in the mRNA (120 nucleotides total centered on the {\bf 5' splice site}, {\bf branch site}, and  {\bf 3' splice site} required for splicing \cite{splicingreview}).
-\newline \\
-TODO: Any diagrams of data
+To split the dataset into training, dev, and testing data, we used 90\% of each library type in the training set, and 5\% of each library type in the dev and test sets. By sampling these splits within library types, we ensured that the dev and test set have the same distribution. The original dataset contained the majority (80.3\%) of splicing efficiency values below 0.1; to correct this imbalance, we equalized the data between the ranges $[0, 0.1]$ and $[0.1, 1]$ by resampling. We made sure that near-identical sequences were not shared between the training, dev, and test sets. We explored using different sequence contexts for splicing efficiency predictions: 1. the full 1615 nucleotide mRNA sequence, 2. the intron alone (maximum length 145 nucleotides), or 3. 20 nucleotide windows around three key splicing sequences in the mRNA (120 nucleotides total centered on the {\bf 5' splice site}, {\bf branch site}, and  {\bf 3' splice site} required for splicing \cite{splicingreview}).
 
 \section{ Methods }
 \subsection{Baseline Model}
@@ -109,16 +106,31 @@ CNN models have been used fruitfully to predict binary splicing outcomes from mR
 \subsection{Training strategy and evaluation metrics}
 Since we are predicting a real-valued outcome, we use a mean-squared error (MSE) regression loss function as implemented in Keras, and we will use a ReLU activation function for the final node in the neural network models. We tuned hyperparameters by evaluating them on the dev dataset, and we evaluate the final models on the test dataset. We trained the RNN and CNN models over 20 epochs using Adam optimization with mini-batches, and we used early stopping for regularization, monitoring the validation loss and ending training after two consecutive epochs with a change in loss of less than 0.001. For each architecture choice, we chose the best of 5 models trained with different random weight initializations. 
 \subsection{Implementation} 
-All deep learning methods were implemented in Keras using TensorFlow 2.0, with logging through wandb and model interpretation through \texttt{tf\_keras\_vis}. Code is available at \texttt{https://github.com/ramyarangan/cs230\_project}.
+All deep learning methods were implemented in Keras using TensorFlow 2.0 \cite{tensorflow}, with logging through wandb and model interpretation through \texttt{tf\_keras\_vis}. Code is available at \texttt{https://github.com/ramyarangan/cs230\_project}.
 
 \section{Experiments and Results}
 \subsection{Hyper-parameter exploration}
 To decide on hyper-parameters of the network, for the CNN architecture with 4 residual blocks trained on a 120 nucleotide window of sequence data, we varied learning rates (0.01, 0.001, and 0.0001), mini-batch sizes (32, 64, 128), and the momentum parameters (0.9 and 0.95). We found that we were able to achieve the best performance on the validation set for this CNN architecture with a learning rate $\alpha = 0.001$, momentum $\beta_1 = 0.9$, and mini-batch size of 64 within 20 epochs. We additionally chose standard values of $\beta_2 = 0.999$ and a decay value of $0.01$ for Adam optimization. 
 
 
-\begin{center}
-\begin{table}
-\small
+\begin{figure}[H]
+\centering
+\begin{subfigure}{.3 \textwidth}
+\centering
+\includegraphics[width=2.5cm]{../figures/cnn_architecture.png} \caption{} 
+\label{fig:architecture}
+\end{subfigure}
+\begin{subfigure}{.65 \textwidth}
+\centering
+\includegraphics[width=8cm]{../figures/loss.png} \caption{}  
+\label{fig:loss}
+\end{subfigure}
+\caption{Best-performing CNN network. a) CNN architecture for best network. \texttt{CONV(n,f)} layers indicate the number of filters with \texttt{n} and the filter size with \texttt{f}. b) Mean-squared error loss over epochs of training for best network, compared to the baseline model, and models predicting 0 for all examples or random values for all examples.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\tiny
  \begin{tabular}{||c | c | c | c | c | c | c||} 
  \hline
  Model & Architecture & Sequence context & \# params & Training MSE & Validation MSE & Pearson r \\ [0.5ex] 
@@ -147,87 +159,44 @@ To decide on hyper-parameters of the network, for the CNN architecture with 4 re
 \caption{Performance of CNN and RNN architectures on predicting splicing efficiency. Training and validation mean-squared errors (MSE) are reported. The Pearson r is reported for the dev set for each architecture, and is reported as nan in cases where the model predicts only 0 values. The best model is bolded.}
 \label{tab:perf}
 \end{table}
-\end{center}
-
-\begin{figure}[H]
-\centering
-\begin{subfigure}{.2 \textwidth}
-\centering
-\caption{} \includegraphics[width=3cm]{../figures/cnn_architecture.png} 
-\label{fig:architecture}
-\end{subfigure}
-\begin{subfigure}{.7 \textwidth}
-\centering
-\caption{}  \includegraphics[width=8cm]{../figures/loss.png} 
-\label{fig:loss}
-\end{subfigure}
-\caption{Best-performing CNN network. a) CNN architecture for best network. \texttt{CONV(n,f)} layers indicate the number of filters with \texttt{n} and the filter size with \texttt{f}. b) Mean-squared error loss over epochs of training for best network, compared to the baseline model, and models predicting 0 for all examples or random values for all examples.}
-\end{figure}
 
 \subsection{Model performance} 
-When the baseline model is used to predict splicing efficiency values for the development set, the mean-squared error loss on the dev set is 0.188 compared to the mean-squared error loss of 0.266 for a random model that predicts uniform random values from 0 to 1 for all dev set examples, or 0.258 for a model that predicts 0 for all examples. The LSTM architectures were not able to improve loss beyond the a network that predicts all zero values. However, most CNN architectures tested decreased mean-squared error loss over training epochs, leading to lower MSE values on the training and validation data and higher Pearson r correlation values to the validation data (Table \ref{tab:perf}). The best architecture included one residual block and additional convolutions followed by a dense layer (Figure \ref{fig:architecture}), with both training and validation mean-squared error loss falling below that of the baseline model (Figure \ref{fig:loss}). \newline \\
+When the baseline model is used to predict splicing efficiency values for the development set, the mean-squared error loss on the dev set is 0.188 compared to the mean-squared error loss of 0.266 for a random model that predicts uniform random values from 0 to 1 for all dev set examples, or 0.258 for a model that predicts 0 for all examples. The LSTM architectures were not able to improve loss beyond the a network that predicts all zero values. However, most CNN architectures tested decreased mean-squared error loss over training epochs, leading to lower MSE values on the training and validation data and higher Pearson r correlation values to the validation data (Table \ref{tab:perf}). The best architecture included one residual block and additional convolutions followed by a dense layer (Figure \ref{fig:architecture}), with both training and validation mean-squared error loss falling below that of the baseline model (Figure \ref{fig:loss}). The MSE on the test set for this best architecture was 0.102 (similar to validation MSE), compared to 0.202 MSE on the test set for the baseline model. \newline \\
 Including a residual block improved training, achieving better MSE and Pearson R correlation to the validation data (compare 1 Residual Block + CONV model with 0.104 validation MSE to the 5 CONV model that contains no Add layers with 0.171 validation MSE). However, adding additional residual blocks (compare the 4 Residual Blocks model with 0.133 validation MSE to the 1 Residual Block + CONV model with 0.104 validation MSE). The best models made predictions using windows of size 40 centered on three key splicing sequences (120 nucleotides total) (Table \ref{tab:perf}). While models given the full-length transcript were not able to perform better than a network predicting all zero values, a model using the full intron was able to achieve good performance with validation MSE 0.134 (Table \ref{tab:perf}). This indicates that the precise locations of key splicing sequences are not necessary inputs for deep learning approaches predicting splicing efficiency. 
 
 \subsection{Error analysis and interpretation}
-We found that 
+We proceeded to analyze the best CNN architecture depicted in Figure \ref{fig:architecture}. We observed that the distribution of splicing efficiency values predicted by the network was close to the distribution of the validation set, with many constructs having 0 splicing efficiency. We analyzed the mean-squared error for each library subtype. We found close to 0 mean-squared error for the control library designs, which consisted of five libraries and 3219 sequences intended to splice poorly; the splicing efficiency values for constructs in these sets were nearly all 0. We also saw better than random performance on most other library types. However, performance on the orthologous sequence library (introns naturally occurring in species related to {\it S. cerevisiae}) was poor, perhaps due to the limited number (961) of training examples in this set. To interpret the features of input sequences that were used for predictions, we used SmoothGrad \cite{smoothgrad}, producing saliency maps as shown in Figure \ref{fig:saliency}. These maps suggest that the random library barcode region (positions 8-14) is correctly not used for splicing prediction, and that the branch site (positions 60-67) has high saliency for prediction. However, interestingly, the full sequence window is used by the CNN to make predictions, compared to the baseline model which uses only regions indicated as "canonical splicing sequences" in Figure \ref{fig:saliency}.
 
 \begin{figure}[H]
 \centering
+%\begin{subfigure}{0.3\textwidth}
+%\begin{subfigure}{\textwidth}
+%\centering
+%\includegraphics[width=\textwidth]{../figures/distribution.png} \caption{}
+%\label{fig:distribution}
+%\end{subfigure} \\
 \begin{subfigure}{0.3\textwidth}
-\begin{subfigure}{\textwidth}
-\centering
-\includegraphics[width=\textwidth]{../figures/distribution.png} \caption{}
-\label{fig:distribution}
-\end{subfigure} \\
-\begin{subfigure}{\textwidth}
 \centering
 \includegraphics[width=0.95\textwidth]{../figures/library_type.png} \caption{} 
 \label{fig:library}
-\end{subfigure}
 \end{subfigure}%
+%\end{subfigure}%
 \begin{subfigure}{0.7\textwidth}
 \centering
- \includegraphics[width=\textwidth]{../figures/saliency.png} \caption{} 
+ \includegraphics[width=0.75\textwidth]{../figures/saliency.png} \caption{} 
 \label{fig:saliency}
 \end{subfigure}
-\caption{Error analysis and interpretation for best CNN network. a) Distribution of predicted splicing efficiency values and .}
+\caption{Error analysis and interpretation for best CNN network. a) Mean-squared error loss for each library. b) Saliency of each position of the sequence window for the final prediction. Per-position sequence entropy indicates sequence variation in the training dataset, and canonical splicing sequences indicate positions used by the baseline model.}
 \end{figure}
 
 \subsection{Discussion} 
-In all models performing better than random, some variance remains, with training MSE below validation MSE, suggesting that approaches to reduce overfitting may prove useful in this setting. We used early stopping during training, but could add dropout regularization to the CNN architectures to further reduce overfitting.
+The CNN architectures tested were able to extract additional information from a broader sequence context than the baseline model, producing predictions with lower mean-squared error and higher Pearson correlation to measured splicing efficiency values. With fewer than 100,000 sequences for training, the best-performing architectures had relatively few parameters, with shallower CNN architectures outperforming deeper CNN's or LSTM models. This contrasts with SpliceAI \cite{spliceai} which trained a much deeper CNN using a larger training dataset on a similar prediction task. In all models performing better than random, some variance remains, with training MSE below validation MSE, suggesting that approaches to reduce overfitting may prove useful in this setting. We used early stopping during training, and could further add dropout regularization to the CNN architectures to further reduce overfitting. 
 
-You should have
-both quantitative and qualitative results. To reiterate, you must have both quantitative
-and qualitative results! If it applies: include visualizations of results, heatmaps,
-examples of where your algorithm failed and a discussion of why certain algorithms failed
-or succeeded. In addition, explain whether you think you have overfit to your training set
-and what, if anything, you did to mitigate that. Make sure to discuss the figures/tables in
-your main text throughout this section. Your plots should include legends, axis labels, and
-have font sizes that are legible when printed.
-
-\section{Conclusion/Future Work }
-Model size given data, SpliceAI work comparison. 
-Summarize your report and reiterate key points. Which algorithms were the highestperforming?
-Why do you think that some algorithms worked better than others? For
-future work, if you had more time, more team members, or more computational resources,
-what would you explore?
-We can augment the training dataset with additional negative examples by using intervals from the yeast genome that do not overlap with naturally occurring spliced mRNA's, assigning these examples to the splicing efficiency value of 0. 
+\section{Conclusion and Future Work }
+Here we found that relatively simple CNN architectures were able to learn splicing efficiency values better than baseline approaches using conventional knowledge for evaluating splicing sequences. Simpler CNN architectures were better performing than LSTM models and deeper CNN's with more parameters. In the future, it will be important to evaluate how robustly the predictions from this network generalize, perhaps using clustering to better separate training and validation data, augmenting with datasets from orthogonal studies, and ultimately, making predictive tests that can be assessed with additional sequencing experiments.
 
 \section{Contributions}
-The contributions section is not included in the 5 page limit. This section should describe
-what each team member worked on and contributed to the project.
-
-\section*{References}
-This section should include citations for: (1) Any papers mentioned in the related work
-section. (2) Papers describing algorithms that you used which were not covered in class.
-(3) Code or libraries you downloaded and used. This includes libraries such as scikit-learn, Tensorflow, Pytorch, Keras etc. Acceptable formats include: MLA, APA, IEEE. If you
-do not use one of these formats, each reference entry must include the following (preferably
-in this order): author(s), title, conference/journal, publisher, year. If you are using TeX,
-you can use any bibliography format which includes the items mentioned above. We are excluding
-the references section from the page limit to encourage students to perform a thorough
-literature review/related work section without being space-penalized if they include more
-references. Any choice of citation style is acceptable
-as long as you are consistent. 
+Ramya performed all modeling and analysis for this project. Huizi Mao provided advice as a Project TA. 
 
 
 \begin{thebibliography}{9}
@@ -254,6 +223,11 @@ biophysics from high-throughput data}. 2018. bioRxiv.
 \bibitem{splicingreview}
 Wilkinson, M.E., Charenton, C., Nagai, K. \textit{RNA Splicing by the Spliceosome}. 2019. Annual Review of Biochemistry, 89 (359-388).
 
+\bibitem{tensorflow}
+Abadi, M., Agarwal, A., Barham, P., et al. \textit{TensorFlow: Large-Scale Machine Learning on Heterogeneous Distributed Systems}. 2016. bioRxiv.
+
+\bibitem{smoothgrad}
+Smilkov, D., Thorat, N., Kim, B., Viegas, F., Wattenberg, M. \textit{SmoothGrad: removing noise by adding noise}. 2017. arXiv.
 \end{thebibliography}
 
 

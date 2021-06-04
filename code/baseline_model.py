@@ -258,7 +258,7 @@ def get_baseline_loss(candidate_df, pwms, len_cutoffs, mean_val, mode, verbose=F
         print("Average prediction value: %f" % np.mean(pred))
         print("Average true value: %f" % np.mean(splicing_effs))
 
-    print(compute_R2(pred, splicing_effs))
+    print(compute_pearson(pred, splicing_effs))
     return compute_loss(pred, splicing_effs)
 
 pwms = get_pwms(wildtype_df, perc=(1-PERCENTILE))
