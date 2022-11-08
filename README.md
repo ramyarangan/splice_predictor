@@ -1,6 +1,6 @@
-# cs230_project
+# Splice predictor
 
-This repository hosts code for the project "Predicting mRNA splicing levels from sequence."
+This repository hosts code for the project "Predicting mRNA splicing levels from sequence" (CS230 project). It predicts splicing levels for intron sequences in S. cerevisiae.
 
 Requires:
 * Tensorflow version 2.5.0
